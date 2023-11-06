@@ -1,6 +1,6 @@
 #include "libft.h"
 
-char	*ft_itolh(unsigned int nb)
+static char	*ft_itolh(unsigned int nb)
 {
 	char	*hex;
 
@@ -8,7 +8,6 @@ char	*ft_itolh(unsigned int nb)
 		hex = strjoin(hex, "0\0");
 	while (nb > 0)
 	{
-		
 	}
 	return (hex);
 }

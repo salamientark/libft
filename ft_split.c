@@ -1,95 +1,101 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_split.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: madlab <madlab@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/06 20:00:31 by madlab            #+#    #+#             */
+/*   Updated: 2023/11/06 20:23:28 by madlab           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
 #include <stdio.h>
 
-static	unsigned int	word_nb(const char *s, char c)
+static int	is_present(char c, char *str)
 {
-	unsigned int	word_count;
-	size_t			new_word;
-	const char		*s_ptr;
+	unsigned int	i;
 
-	new_word = 1;
-	s_ptr = s;
-	word_count = 0;
-	while (*s_ptr)
+	i = 0;
+	while (str[i])
 	{
-		if (*s_ptr != c && new_word)
+		if (str[i] == c)
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+static int	count_word(char *str, char *sep)
+{
+	int		word_count;
+	int		new_word;
+	char	*str_p;
+
+	str_p = str;
+	word_count = 0;
+	new_word = 1;
+	while (*str_p)
+	{
+		if (is_present(*str_p, sep) == -1)
 		{
+			if (new_word == 1)
+				word_count++;
 			new_word = 0;
-			word_count++;
 		}
-		if (*s_ptr == c && !new_word)
+		else
 			new_word = 1;
-		s_ptr++;
+		str_p++;
 	}
 	return (word_count);
 }
 
-static void	ft_split_abort(char ***str_tab_ptr, unsigned int size)
+static char	*extract_word(char **str, char *charset)
 {
-	while (size > 0)
+	int		i;
+	int		size;
+	char	*word;
+
+	while (is_present(**str, charset) >= 0)
+		(*str)++;
+	i = 0;
+	while ((*str)[i] && is_present((*str)[i], charset) == -1)
+		i++;
+	if (i == 0)
+		return (NULL);
+	word = (char *)malloc(i + 1);
+	if (!word)
+		return (NULL);
+	size = i;
+	i = 0;
+	while (i < size)
 	{
-		free(*(str_tab_ptr[size]));
-		*(str_tab_ptr[size--]) = 0;
+		word[i] = (*str)[i];
+		i++;
 	}
-	free(*str_tab_ptr);
-	*str_tab_ptr = 0;
-}
-
-static char	*put_next_word(const char *s, size_t *start, char c)
-{
-	size_t	word_size;
-	char	*new_word;
-
-	word_size = 0;
-	while (s[*start] && s[*start] == c)
-		(*start)++;
-	if (s[*start])
-	{
-		while (s[*start + word_size] && s[*start + word_size] != c)
-			word_size++;
-	}
-	new_word = ft_substr(s, *start, word_size);
-	*start = *start + word_size;
-	return (new_word);
-}
-
-static char	**ft_split_aux(char **str_tab, const char *s, size_t str_tab_len,
-	char c)
-{
-	size_t	str_tab_index;
-	size_t	s_index;
-
-	str_tab_index = 0;
-	s_index = 0;
-	while (str_tab_index < str_tab_len)
-	{
-		str_tab[str_tab_index] = put_next_word(s, &s_index, c);
-		if (!str_tab[str_tab_index])
-		{
-			ft_split_abort(&str_tab, (unsigned int)str_tab_index);
-			return (NULL);
-		}
-		str_tab_index++;
-	}
-	str_tab[str_tab_index] = 0;
-	return (str_tab);
+	word[i] = '\0';
+	*str += size;
+	return (word);
 }
 
 char	**ft_split(const char *s, char c)
 {
-	char			**str_tab;
-	unsigned int	str_tab_len;
+	char	**strs_tab;
+	int		word_nb;
+	int		index;
 
-	if (s)
+	word_nb = count_word(s, c);
+	strs_tab = (char **) malloc(sizeof(char *) * (word_nb + 1));
+	if (!strs_tab)
+		return (0);
+	index = 0;
+	while (index < word_nb)
 	{
-		str_tab_len = word_nb(s, c);
-		str_tab = (char **)malloc(sizeof(char *) * (str_tab_len + 1));
-		if (str_tab)
-		{
-			str_tab = ft_split_aux(str_tab, s, str_tab_len, c);
-			return (str_tab);
-		}
+		strs_tab[index] = extract_word(&s, c);
+		index++;
 	}
-	return (NULL);
+	strs_tab[index] = 0;
+	return (strs_tab);
 }

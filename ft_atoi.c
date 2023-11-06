@@ -1,28 +1,41 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: madlab <madlab@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/06 19:17:12 by madlab            #+#    #+#             */
+/*   Updated: 2023/11/06 20:24:10 by madlab           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
 int	ft_atoi(const char *str)
 {
-	int	index;
-	int	sign;
 	int	nbr;
+	int	sign;
 
-	nbr = 0;
 	sign = 0;
-	index = 0;
-	while (str[index] == '\t' || str[index] == '\n' || str[index] == '\v'
-		|| str[index] == '\f' || str[index] == '\r' || str[index] == ' ')
-		index++;
-	if (ft_isdigit(str[index]) == 0)
+	nbr = 0;
+	if (*str)
 	{
-		if (str[index] == '-')
-			sign++;
-		else if (str[index] != '+')
-			return (0);
-		index++;
+		while (*str == ' ' || (*str >= '\t' && *str <= '\r'))
+			str++;
+		while (*str == '-' || *str == '+')
+		{
+			if (*str == '-')
+				sign++;
+			str++;
+		}
+		while ('0' <= *str && *str <= '9')
+		{
+			nbr = (10 * nbr) + (*str - '0');
+			str++;
+		}
+		if (sign % 2 == 1)
+			nbr = -nbr;
 	}
-	while (ft_isdigit(str[index]) == 1)
-		nbr = 10 * nbr + (str[index++] - 48);
-	if (sign == 1)
-		nbr *= -1;
 	return (nbr);
 }
