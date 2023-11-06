@@ -1,0 +1,6 @@
+function strlcat could be optimized
+function ft_strtrim has malloc problem /not ERROR 
+	when used with valgrind
+	in the ft_strjoin part is certainly allocating memory and
+	not freeing the argument memory
+ft_itoa : could be optimized
